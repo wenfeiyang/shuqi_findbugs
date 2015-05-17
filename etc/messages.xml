@@ -80,8 +80,17 @@ It is a slow detector.</p>
     </Details>
   </Detector>
   
+  <Detector class="com.shuqi.findbugs.NamingConvention">
+    <Details>
+<![CDATA[
+<p> This detector looks for classes not following the naming rules of Activity, Service, Dialog, etc
+It is a slow detector.</p>
+]]>
+    </Details>
+  </Detector>
+  
   <BugPattern type="OOM_BITMAP_NO_SAMPLING">
-    <ShortDescription> Bitmap no sampling source data</ShortDescription>
+    <ShortDescription>Bitmap no sampling source data</ShortDescription>
     <LongDescription>'BitmapFactory.decodeResource' or 'BitmapFactory.decodeFile' loads picture directly without setting 'inSampleSize' option</LongDescription>
     <Details>
 <![CDATA[
@@ -92,7 +101,7 @@ It is a slow detector.</p>
   </BugPattern>
   
   <BugPattern type="OOM_BITMAP_NO_EXPLICIT_RECYCLE">
-    <ShortDescription> No explicit call of recycle() on Bitmap object</ShortDescription>
+    <ShortDescription>No explicit call of recycle() on Bitmap object</ShortDescription>
     <LongDescription>No explicit call of recycle() on Bitmap object</LongDescription>
     <Details>
 <![CDATA[
@@ -198,21 +207,51 @@ have problems communicating with the database.</p>
   </BugPattern>
   
   <BugPattern type="OOM_MISUSE_APPLICATION_CONTEXT">
-    <ShortDescription>OOM_MISUSE_APPLICATION_CONTEXT</ShortDescription>
-    <LongDescription>OOM_MISUSE_APPLICATION_CONTEXT</LongDescription>
+    <ShortDescription>Should use application context</ShortDescription>
+    <LongDescription>Should use application context besides for Dialog objects, etc</LongDescription>
     <Details>
 <![CDATA[
-OOM_MISUSE_APPLICATION_CONTEXT
+Should use application context as much as possible
 ]]>
     </Details>
   </BugPattern>
   
   <BugPattern type="OOM_MISUSE_ACTIVITY_CONTEXT">
-    <ShortDescription>OOM_MISUSE_ACTIVITY_CONTEXT</ShortDescription>
-    <LongDescription>OOM_MISUSE_ACTIVITY_CONTEXT</LongDescription>
+    <ShortDescription>Should use activity context</ShortDescription>
+    <LongDescription>Should use activity context for dialog</LongDescription>
     <Details>
 <![CDATA[
-OOM_MISUSE_ACTIVITY_CONTEXT
+Dialog should use activity context
+]]>
+    </Details>
+  </BugPattern>
+  
+  <BugPattern type="NM_ACTIVITY_CLASS_NAMING">
+    <ShortDescription>Activity subclass's name should end with 'Activity'</ShortDescription>
+    <LongDescription>Activity subclass's name should end with 'Activity'</LongDescription>
+    <Details>
+<![CDATA[
+Activity subclass's name should end with 'Activity'
+]]>
+    </Details>
+  </BugPattern>
+  
+   <BugPattern type="NM_SERVICE_CLASS_NAMING">
+    <ShortDescription>Service subclass's name should end with 'Service'</ShortDescription>
+    <LongDescription>Service subclass's name should end with 'Service'</LongDescription>
+    <Details>
+<![CDATA[
+Service subclass's name should end with 'Service'
+]]>
+    </Details>
+  </BugPattern>
+  
+   <BugPattern type="NM_DIALOG_CLASS_NAMING">
+    <ShortDescription>Dialog subclass's name should end with 'Dialog'</ShortDescription>
+    <LongDescription>Dialog subclass's name should end with 'Dialog'</LongDescription>
+    <Details>
+<![CDATA[
+Dialog subclass's name should end with 'Dialog'
 ]]>
     </Details>
   </BugPattern>

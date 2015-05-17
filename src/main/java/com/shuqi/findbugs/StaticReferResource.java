@@ -1,14 +1,10 @@
 package com.shuqi.findbugs;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantNameAndType;
+import org.apache.bcel.classfile.JavaClass;
 
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.generic.ObjectType;
-
+import edu.umd.cs.findbugs.BugAccumulator;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.StatelessDetector;
@@ -27,70 +23,48 @@ public class StaticReferResource extends OpcodeStackDetector implements Stateles
 		"android.graphics.Bitmap",
 		"android.graphics.drawable.Drawable"
 	};
-	private static Set<ObjectType> PERMITTED_STATIC_REFER_BASE_TYPE = new LinkedHashSet<ObjectType>();
 	
-	private static String valid_prefix_pattern = "com\\..*|android\\..*|org\\..*";
-	
-	private static List<ClassDescriptor> permitted_static_ref_class = new ArrayList<ClassDescriptor>();
-	
-	static {
-		for (String base_name : PERMITTED_STATIC_REFER_BASE_NAME) {
-			ObjectType type = ObjectType.getInstance(base_name);
-			if (type != null) {
-				 PERMITTED_STATIC_REFER_BASE_TYPE.add(type);
-			}
-		}
+	@Override
+	public boolean shouldVisit(JavaClass jclass) {
+        for (int i = 0; i < jclass.getConstantPool().getLength(); ++i) {
+            Constant constant = jclass.getConstantPool().getConstant(i);
+            if (constant instanceof ConstantNameAndType) {
+            	ConstantNameAndType cc = (ConstantNameAndType) constant;
+            	String signature = cc.getSignature(getConstantPool());
+            	if (signature.contains("Activity") ||
+            			signature.contains("Bitmap") ||
+            			signature.contains("Drawable")) {
+            		return true;
+            	}
+            }
+        }
+		return super.shouldVisit(jclass);
 	}
-	
-	 BugReporter bugReporter;
+
+	private final BugAccumulator accumulator;
 
 	 public StaticReferResource(BugReporter bugReporter) {
-		 this.bugReporter= bugReporter;
+		 accumulator = new BugAccumulator(bugReporter);
 	 }
 	 
 	 private boolean isAllowedStaticField(String field_dot_class_name) {
-		 if (field_dot_class_name.matches(valid_prefix_pattern)) {
-			 ObjectType target_type = ObjectType.getInstance(field_dot_class_name);
-			 if (target_type != null) {
-				 for (ObjectType base_type: PERMITTED_STATIC_REFER_BASE_TYPE) {
-					 try {
-						 if (DEBUG) {
-							 System.out.println("base type " + base_type.getClassName());
-							 System.out.println("target type " + target_type.getClassName());
-						 }
-						if (target_type.isAssignmentCompatibleWith(base_type)) {	
-							 return false;
-						 }
-					} catch (ClassNotFoundException e) {
-						 if (DEBUG) {
-							 e.printStackTrace();
-						 }
-					}
-				 }
-			 }
-			 for (String base_name: PERMITTED_STATIC_REFER_BASE_NAME) {
-				 if (field_dot_class_name == base_name) {
-					 return false;
-				 }
+		 for (String base_name: PERMITTED_STATIC_REFER_BASE_NAME) {
+			 if (field_dot_class_name == base_name) {
+				 return false;
 			 }
 		 }
+		 for (String base_type: PERMITTED_STATIC_REFER_BASE_NAME) {
+			 try {
+				if (Util.isSubType(base_type, field_dot_class_name)) {	
+					 return false;
+				 }
+			} catch (ClassNotFoundException e) {
+				 if (DEBUG) {
+					 e.printStackTrace();
+				 }
+			}
+		 }
 		 return true;
-	 }
-	 
-	 private void reportBug(Field obj) {
-			BugInstance bug = new BugInstance(this,"OOM_STATIC_REFER_RESOURCE", HIGH_PRIORITY)
-								.addClass(this)
-								.addField(getClassName(), obj.getName(), obj.getSignature(), true);
-			bug.addInt(getPC());
-			bugReporter.reportBug(bug);	
-	 }
-	 
-	 private void reportBug() {
-			BugInstance bug = new BugInstance(this,"OOM_STATIC_REFER_RESOURCE", HIGH_PRIORITY)
-								.addClassAndMethod(this).addSourceLine(this, getPC());
-			bug.addInt(getPC());
-			bugReporter.reportBug(bug);
-			
 	 }
 
 	@Override
@@ -105,7 +79,8 @@ public class StaticReferResource extends OpcodeStackDetector implements Stateles
 		        		System.out.println("statci field type " + class_descriptor.getDottedClassName());
 		        	}
 		        	if (!isAllowedStaticField(class_descriptor.getDottedClassName())) {
-		        		reportBug();
+		        		accumulator.accumulateBug(new BugInstance(this,"OOM_STATIC_REFER_RESOURCE", HIGH_PRIORITY)
+		        		.addClassAndMethod(this).addSourceLine(this, getPC()), this);
 		        	}
 	        	}
         	}
@@ -115,6 +90,10 @@ public class StaticReferResource extends OpcodeStackDetector implements Stateles
         }
 		
 	}
-	
-	
+
+	@Override
+	public void visitAfter(JavaClass obj) {
+		accumulator.reportAccumulatedBugs();
+		super.visitAfter(obj);
+	}
 }

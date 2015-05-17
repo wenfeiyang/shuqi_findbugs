@@ -11,6 +11,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantInterfaceMethodref;
 import org.apache.bcel.classfile.ConstantMethodref;
+import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.JavaClass;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -39,10 +40,6 @@ public class BitmapMisuse extends OpcodeStackDetector implements StatelessDetect
 	private String last_invoked_field_sig = null;
 	
 	static final boolean DEBUG = SystemProperties.getBoolean("cm.debug");
-
-	private static String[] PRESCREEN_CLASS_LIST = new String[] {
-		"Bitmap"
-	};
 	
 	BugReporter bugReporter;
 	
@@ -84,39 +81,18 @@ public class BitmapMisuse extends OpcodeStackDetector implements StatelessDetect
 		last_invoked_field_sig = null;
 	}
 	
-
 	@Override
 	public boolean shouldVisit(JavaClass jclass) {
-        boolean sawTargetClass = false;
         for (int i = 0; i < jclass.getConstantPool().getLength(); ++i) {
             Constant constant = jclass.getConstantPool().getConstant(i);
-            String className = null;
-            if (constant instanceof ConstantMethodref) {
-                ConstantMethodref cmr = (ConstantMethodref) constant;
-
-                int classIndex = cmr.getClassIndex();
-                className = jclass.getConstantPool().getConstantString(classIndex, Constants.CONSTANT_Class);
-            } else if (constant instanceof ConstantInterfaceMethodref) {
-                ConstantInterfaceMethodref cmr = (ConstantInterfaceMethodref) constant;
-
-                int classIndex = cmr.getClassIndex();
-                className = jclass.getConstantPool().getConstantString(classIndex, Constants.CONSTANT_Class);
-            }
-
-            if (className != null) {
-                if (DEBUG) {
-                    System.out.println("FindOpenDataSource: saw class " + className);
-                }
-
-                for (String aPRESCREEN_CLASS_LIST : PRESCREEN_CLASS_LIST ) {
-                    if (className.indexOf(aPRESCREEN_CLASS_LIST) >= 0) {
-                    	sawTargetClass = true;
-                        break;
-                    }
-                }
+            if (constant instanceof ConstantNameAndType) {
+            	ConstantNameAndType cc = (ConstantNameAndType) constant;
+            	if (cc.getSignature(getConstantPool()).contains("Landroid/graphics/Bitmap;")) {
+            		return true;
+            	}
             }
         }
-        return sawTargetClass;
+		return super.shouldVisit(jclass);
 	}
 	
 	

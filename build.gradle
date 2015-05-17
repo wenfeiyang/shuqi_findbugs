@@ -15,7 +15,7 @@ version = 1.0
 task fatJar(type:Jar) {
     from fileTree('etc').include('*.xml')
     from fileTree('etc').include('*.txt')
-    baseName 'oom-detector'
+    baseName 'shuqi_findbugs'
     with jar
 }
 

@@ -5,7 +5,7 @@
           version="1.0"
           provider="Shuqi project" website="http://findbugs.sourceforge.net">
 <!--   <Detector class="com.shuqi.findbugs.OomDetector" speed="fast" reports="OOM_UNPROTECTED_LOGGING" hidden="false"/> -->
-  <Detector class="com.shuqi.findbugs.BitmapMisuse" speed="fast" 
+   <Detector class="com.shuqi.findbugs.BitmapMisuse" speed="fast" 
       reports="OOM_BITMAP_NO_SAMPLING,OOM_BITMAP_NO_EXPLICIT_RECYCLE" hidden="false"/>
   <Detector class="com.shuqi.findbugs.StaticReferResource" speed="slow" reports="OOM_STATIC_REFER_RESOURCE" hidden="false"/>
   <Detector class="com.shuqi.findbugs.MissingUnregistation" speed="fast" reports="OOM_MISSING_UNREGISTATION" hidden="false"/>
@@ -13,6 +13,8 @@
   <Detector class="com.shuqi.findbugs.FindOpenDatasource" speed="slow" 
       reports="OOM_OPEN_DATABASE_RESOURCE,OOM_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH,OOM_UNCYCLE_LOCAL_BITMAP,OOM_UNCYCLE_LOCAL_BITMAP_EXCEPTION_PATH" hidden="false"/>
   <Detector class="com.shuqi.findbugs.ContextMisuse" speed="fast" reports="OOM_MISUSE_APPLICATION_CONTEXT,OOM_MISUSE_ACTIVITY_CONTEXT" hidden="false"/>
+  <Detector class="com.shuqi.findbugs.NamingConvention" speed="fast" 
+      reports="NM_ACTIVITY_CLASS_NAMING,NM_SERVICE_CLASS_NAMING, NM_DIALOG_CLASS_NAMING" hidden="false"/>
   <BugCode abbrev="OOM"/>
 
 <!--   <BugPattern abbrev="OOM" type="OOM_UNPROTECTED_LOGGING" category="PERFORMANCE"/> -->
@@ -27,4 +29,7 @@
   <BugPattern abbrev="OOM" type="OOM_UNCYCLE_LOCAL_BITMAP_EXCEPTION_PATH" category="PERFORMANCE"/>
   <BugPattern abbrev="OOM" type="OOM_MISUSE_APPLICATION_CONTEXT" category="PERFORMANCE"/>
   <BugPattern abbrev="OOM" type="OOM_MISUSE_ACTIVITY_CONTEXT" category="PERFORMANCE"/>
+  <BugPattern abbrev="Nm" type="NM_ACTIVITY_CLASS_NAMING" category="BAD_PRACTICE"/>
+  <BugPattern abbrev="Nm" type="NM_SERVICE_CLASS_NAMING" category="BAD_PRACTICE"/>
+  <BugPattern abbrev="Nm" type="NM_DIALOG_CLASS_NAMING" category="BAD_PRACTICE"/>
 </FindbugsPlugin>

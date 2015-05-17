@@ -30,7 +30,7 @@ public class Util {
 	
 	public static String[] getMethodParameterClassNames(String signature) {
 		SignatureParser parser = new SignatureParser(signature);
-		String[] names = new String[parser.getTotalArgumentSize()];
+		String[] names = new String[parser.getNumParameters()];
 		for (int i = 0 ; i< names.length; i++) {
 			names[i] = Util.toDotClassName(parser.getParameter(i));
 		}
@@ -47,6 +47,21 @@ public class Util {
 		return -1;
 	}
 	
+	public static int getParameterStackSlot(String method_sig, String target_param_type) {
+		String[] param_types = Util.getMethodParameterClassNames(method_sig);
+		for (int i = 0 ; i < param_types.length; i++) {
+			if (target_param_type.equals(param_types[i])) {
+				return param_types.length - i -1;
+			}
+		}
+		return -1;
+	}
+	
+	public static int getParameterCount(String method_sig) {
+		SignatureParser parser = new SignatureParser(method_sig);
+		return parser.getNumParameters();
+	}
+	
 	public static boolean hasParamTypeInMethod(String method_sig, String target_param_type) {
 		return Util.getParameterFirstSlot(method_sig, target_param_type) >= 0;
 	}
@@ -61,7 +76,7 @@ public class Util {
 	}
 	
 	public static void main(String[] args) {
-		for (String para : Util.getMethodParameterClassNames("(Landroid/content/Context;)V")) {
+		for (String para : Util.getMethodParameterClassNames("(J)V")) {
 			System.out.println(para);
 		}
 	}

@@ -16,4 +16,4 @@ include 'api'
 include 'services:webservice'
 */
 
-rootProject.name = 'oom_dectector'
+rootProject.name = 'shuqi_findbugs'
