@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<MessageCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="messagecollection.xsd">
+
+  <!--
+  **********************************************************************
+  Plugin information
+  **********************************************************************
+  -->
+  <Plugin>
+    <ShortDescription>Shuqi Specific Findbugs plugin</ShortDescription>
+    <Details>
+<![CDATA[
+<p>
+This plugin contains all of the specific FindBugs detectors for shuqi project.
+</p>
+]]>
+    </Details>
+  </Plugin>
+
+<!--   <Detector class="com.shuqi.findbugs.OomDetector">
+    <Details>
+<![CDATA[
+<p> This detector finds logs statements that aren't contained in an if-logging block. 
+It is a fast detector.
+]]>
+    </Details>
+  </Detector> -->
+  
+   <Detector class="com.shuqi.findbugs.BitmapMisuse">
+    <Details>
+<![CDATA[
+<p> This detector finds misuses of Bitmap which may potentially lead to OOM Error.
+<p> Refer to <a href='https://developer.android.com/training/displaying-bitmaps/index.html'>Displaying Bitmaps Efficiently</a>
+]]>
+    </Details>
+  </Detector>
+  
+    <Detector class="com.shuqi.findbugs.StaticReferResource">
+    <Details>
+<![CDATA[
+<p> This detector finds static references of Object holding memory-consumption resources that cause GC never work
+]]>
+    </Details>
+  </Detector>
+  
+    <Detector class="com.shuqi.findbugs.MissingUnregistation">
+    <Details>
+<![CDATA[
+<p> This detector detects if 'Context.unregisterReceiver' is missing in case of 'Context.registerReceiver' called
+]]>
+    </Details>
+  </Detector>
+
+    <Detector class="com.shuqi.findbugs.UseAdapterConvertView">
+    <Details>
+<![CDATA[
+<p> This detector finds classes extended from BaseAdapter that don't try to use 'convertView' by detecting if 'convertView' is null in overrided 'getView' method 
+]]>
+    </Details>
+  </Detector>
+  
+  <Detector class="com.shuqi.findbugs.FindOpenDatasource">
+    <Details>
+<![CDATA[
+<p> This detector looks for Android database or Bitmap objects which do not escape the
+method and do not appear to be closed/recycled on all paths out of the method.
+It is a slow detector.</p>
+]]>
+    </Details>
+  </Detector>
+  
+  <Detector class="com.shuqi.findbugs.ContextMisuse">
+    <Details>
+<![CDATA[
+<p> This detector looks for misuse of Application context and Activity context
+It is a slow detector.</p>
+]]>
+    </Details>
+  </Detector>
+  
+  <BugPattern type="OOM_BITMAP_NO_SAMPLING">
+    <ShortDescription> Bitmap no sampling source data</ShortDescription>
+    <LongDescription>'BitmapFactory.decodeResource' or 'BitmapFactory.decodeFile' loads picture directly without setting 'inSampleSize' option</LongDescription>
+    <Details>
+<![CDATA[
+<p> Bitmap creation via 'BitmapFactory.decodeResource' or 'BitmapFactory.decodeFile' doesn't set 'inSampleSize' option
+<p> For details, refer to <a href='https://developer.android.com/training/displaying-bitmaps/load-bitmap.html'>Loading Large Bitmaps Efficiently</a>
+]]>
+    </Details>
+  </BugPattern>
+  
+  <BugPattern type="OOM_BITMAP_NO_EXPLICIT_RECYCLE">
+    <ShortDescription> No explicit call of recycle() on Bitmap object</ShortDescription>
+    <LongDescription>No explicit call of recycle() on Bitmap object</LongDescription>
+    <Details>
+<![CDATA[
+<p> Bitmap Object doesn't call recycle() explicitly
+<p> On Android 2.3.3 (API level 10) and lower, the backing pixel data for a bitmap is stored in native memory. It is separate from the bitmap itself, which is stored in the Dalvik heap. The pixel data in native memory is not released in a predictable manner, potentially causing an application to briefly exceed its memory limits and crash
+<p> For details, refer to <a href='https://developer.android.com/training/displaying-bitmaps/manage-memory.html'>Loading Large Bitmaps Efficiently</a>
+]]>
+    </Details>
+  </BugPattern>
+  
+  <BugPattern type="OOM_STATIC_REFER_RESOURCE">
+    <ShortDescription>Static references of memory-consumption resources</ShortDescription>
+    <LongDescription>Static references of memory-consumption resources</LongDescription>
+    <Details>
+<![CDATA[
+<p> Static references of Object holding memory-consumption resources
+<p> Permitted static refer types: "com.shuqi.activity.ActivityBase", "android.app.Activity", "android.graphics.Bitmap", "android.graphics.drawable"
+]]>
+    </Details>
+  </BugPattern>
+  
+  <BugPattern type="OOM_MISSING_UNREGISTATION">
+    <ShortDescription>Missing Context.unregisterReceiver</ShortDescription>
+    <LongDescription>'Context.registerReceiver' and 'Context.unregisterReceiver' should appear in pair in the lifecycle of current class</LongDescription>
+    <Details>
+<![CDATA[
+If 'Context.registerReceiver' is called, 'Context.unregisterReceiver' should be called before end of current class lifecycle
+]]>
+    </Details>
+  </BugPattern>
+
+    <BugPattern type="OOM_NOT_USE_CONVERTVIEW">
+    <ShortDescription>Not using 'convertView' in BaseAdapter</ShortDescription>
+    <LongDescription>'convertView' should be used in first priority in method 'getView' of BaseAdapter</LongDescription>
+    <Details>
+<![CDATA[
+'convertView' should be used in first priority in method 'getView' of BaseAdapter
+]]>
+    </Details>
+  </BugPattern>
+  
+    <BugPattern type="OOM_OPEN_DATABASE_RESOURCE">
+    <ShortDescription>Method may fail to close database resource</ShortDescription>
+    <LongDescription>{1} may fail to close {2.excludingPackage}</LongDescription>
+    <Details>
+<![CDATA[
+<p> The method creates a database resource (such as a database connection
+or row set), does not assign it to any
+fields, pass it to other methods, or return it, and does not appear to close
+the object on all paths out of the method.&nbsp; Failure to
+close database resources on all paths out of a method may
+result in poor performance, and could cause the application to
+have problems communicating with the database.
+</p>
+]]>
+    </Details>
+  </BugPattern>
+  
+  <BugPattern type="OOM_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH">
+    <ShortDescription>Method may fail to close database resource on exception</ShortDescription>
+    <LongDescription>{1} may fail to close database resource on exception</LongDescription>
+    <Details>
+<![CDATA[
+<p> The method creates a database resource (such as a database connection
+or row set), does not assign it to any
+fields, pass it to other methods, or return it, and does not appear to close
+the object on all exception paths out of the method.&nbsp; Failure to
+close database resources on all paths out of a method may
+result in poor performance, and could cause the application to
+have problems communicating with the database.</p>
+]]>
+    </Details>
+  </BugPattern>
+
+  <BugPattern type="OOM_UNCYCLE_LOCAL_BITMAP">
+    <ShortDescription>Method may fail to recycle Bitmap Object</ShortDescription>
+    <LongDescription>{1} may fail to recycle {2.excludingPackage}</LongDescription>
+    <Details>
+<![CDATA[
+<p> The method creates a Bitmap resource, does not assign it to any
+fields, pass it to other methods, or return it, and does not appear to recycle
+the object on all exception paths out of the method.&nbsp; Failure to
+recycle Bitmap object on all paths out of a method may
+result in poor performance, and could cause the application to
+have problems communicating with the database.</p>
+]]>
+    </Details>
+  </BugPattern>
+
+    <BugPattern type="OOM_UNCYCLE_LOCAL_BITMAP_EXCEPTION_PATH">
+    <ShortDescription>Method may fail to recycle Bitmap Object</ShortDescription>
+    <LongDescription>{1} may fail to recycle Bitmap Object on exception</LongDescription>
+    <Details>
+<![CDATA[
+<p> The method creates a Bitmap resource, does not assign it to any
+fields, pass it to other methods, or return it, and does not appear to recycle
+the object on all exception paths out of the method.&nbsp; Failure to
+recycle Bitmap object on all paths out of a method may
+result in poor performance, and could cause the application to
+have problems communicating with the database.</p>
+]]>
+    </Details>
+  </BugPattern>
+  
+  <BugPattern type="OOM_MISUSE_APPLICATION_CONTEXT">
+    <ShortDescription>OOM_MISUSE_APPLICATION_CONTEXT</ShortDescription>
+    <LongDescription>OOM_MISUSE_APPLICATION_CONTEXT</LongDescription>
+    <Details>
+<![CDATA[
+OOM_MISUSE_APPLICATION_CONTEXT
+]]>
+    </Details>
+  </BugPattern>
+  
+  <BugPattern type="OOM_MISUSE_ACTIVITY_CONTEXT">
+    <ShortDescription>OOM_MISUSE_ACTIVITY_CONTEXT</ShortDescription>
+    <LongDescription>OOM_MISUSE_ACTIVITY_CONTEXT</LongDescription>
+    <Details>
+<![CDATA[
+OOM_MISUSE_ACTIVITY_CONTEXT
+]]>
+    </Details>
+  </BugPattern>
+  
+  <BugCode abbrev="OOM">Found OOM issue</BugCode>
+</MessageCollection>
+

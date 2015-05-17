@@ -1,0 +1,30 @@
+<FindbugsPlugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="findbugsplugin.xsd"
+          pluginid="com.shuqi.controller.findbugs"
+          defaultenabled="true"
+          version="1.0"
+          provider="Shuqi project" website="http://findbugs.sourceforge.net">
+<!--   <Detector class="com.shuqi.findbugs.OomDetector" speed="fast" reports="OOM_UNPROTECTED_LOGGING" hidden="false"/> -->
+  <Detector class="com.shuqi.findbugs.BitmapMisuse" speed="fast" 
+      reports="OOM_BITMAP_NO_SAMPLING,OOM_BITMAP_NO_EXPLICIT_RECYCLE" hidden="false"/>
+  <Detector class="com.shuqi.findbugs.StaticReferResource" speed="slow" reports="OOM_STATIC_REFER_RESOURCE" hidden="false"/>
+  <Detector class="com.shuqi.findbugs.MissingUnregistation" speed="fast" reports="OOM_MISSING_UNREGISTATION" hidden="false"/>
+  <Detector class="com.shuqi.findbugs.UseAdapterConvertView" speed="fast" reports="OOM_NOT_USE_CONVERTVIEW" hidden="false"/>
+  <Detector class="com.shuqi.findbugs.FindOpenDatasource" speed="slow" 
+      reports="OOM_OPEN_DATABASE_RESOURCE,OOM_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH,OOM_UNCYCLE_LOCAL_BITMAP,OOM_UNCYCLE_LOCAL_BITMAP_EXCEPTION_PATH" hidden="false"/>
+  <Detector class="com.shuqi.findbugs.ContextMisuse" speed="fast" reports="OOM_MISUSE_APPLICATION_CONTEXT,OOM_MISUSE_ACTIVITY_CONTEXT" hidden="false"/>
+  <BugCode abbrev="OOM"/>
+
+<!--   <BugPattern abbrev="OOM" type="OOM_UNPROTECTED_LOGGING" category="PERFORMANCE"/> -->
+  <BugPattern abbrev="OOM" type="OOM_BITMAP_NO_SAMPLING" category="PERFORMANCE"/>
+  <BugPattern abbrev="OOM" type="OOM_BITMAP_NO_EXPLICIT_RECYCLE" category="PERFORMANCE"/>
+  <BugPattern abbrev="OOM" type="OOM_STATIC_REFER_RESOURCE" category="PERFORMANCE"/>
+  <BugPattern abbrev="OOM" type="OOM_MISSING_UNREGISTATION" category="PERFORMANCE"/>
+  <BugPattern abbrev="OOM" type="OOM_NOT_USE_CONVERTVIEW" category="PERFORMANCE"/>
+  <BugPattern abbrev="OOM" type="OOM_OPEN_DATABASE_RESOURCE" category="PERFORMANCE"/>
+  <BugPattern abbrev="OOM" type="OOM_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH" category="PERFORMANCE"/>
+  <BugPattern abbrev="OOM" type="OOM_UNCYCLE_LOCAL_BITMAP" category="PERFORMANCE"/>
+  <BugPattern abbrev="OOM" type="OOM_UNCYCLE_LOCAL_BITMAP_EXCEPTION_PATH" category="PERFORMANCE"/>
+  <BugPattern abbrev="OOM" type="OOM_MISUSE_APPLICATION_CONTEXT" category="PERFORMANCE"/>
+  <BugPattern abbrev="OOM" type="OOM_MISUSE_ACTIVITY_CONTEXT" category="PERFORMANCE"/>
+</FindbugsPlugin>
