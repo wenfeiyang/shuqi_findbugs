@@ -144,14 +144,32 @@ public class FindOpenDatasource extends ResourceTrackingDetector<Stream, StreamR
         streamFactoryCollection.add(new MethodReturnValueStreamFactory("android.graphics.BitmapFactory", "decodeResource",
                 "(Landroid/content/res/Resources;I)Landroid/graphics/Bitmap;", 
                 "OOM_UNCYCLE_LOCAL_BITMAP"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("android.graphics.BitmapFactory", "decodeResource",
+                "(Landroid/content/res/Resources;Landroid/util/TypedValue;Ljava/io/InputStream;Landroid/graphics/Rect;Landroid/graphics/BitmapFactory$Options;)Landroid/graphics/Bitmap;", 
+                "OOM_UNCYCLE_LOCAL_BITMAP"));
         streamFactoryCollection.add(new MethodReturnValueStreamFactory("android.graphics.BitmapFactory", "decodeFile",
                 "(Ljava/lang/String;)Landroid/graphics/Bitmap;", 
                 "OOM_UNCYCLE_LOCAL_BITMAP"));
         streamFactoryCollection.add(new MethodReturnValueStreamFactory("android.graphics.BitmapFactory", "decodeFile",
                 "(Ljava/lang/String;Landroid/graphics/BitmapFactory$Options;)Landroid/graphics/Bitmap;", 
                 "OOM_UNCYCLE_LOCAL_BITMAP"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("android.graphics.BitmapFactory", "decodeFileDescriptor",
+                "(Ljava/io/FileDescriptor;)Landroid/graphics/Bitmap;", 
+                "OOM_UNCYCLE_LOCAL_BITMAP"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("android.graphics.BitmapFactory", "decodeFileDescriptor",
+                "(Ljava/io/FileDescriptor;Landroid/graphics/Rect;Landroid/graphics/BitmapFactory$Options;)Landroid/graphics/Bitmap;", 
+                "OOM_UNCYCLE_LOCAL_BITMAP"));
         streamFactoryCollection.add(new MethodReturnValueStreamFactory("android.graphics.BitmapFactory", "decodeByteArray",
                 "([BII)Landroid/graphics/Bitmap;", 
+                "OOM_UNCYCLE_LOCAL_BITMAP"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("android.graphics.BitmapFactory", "decodeByteArray",
+                "([BIILandroid/graphics/BitmapFactory$Options;)Landroid/graphics/Bitmap;", 
+                "OOM_UNCYCLE_LOCAL_BITMAP"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("android.graphics.BitmapFactory", "decodeStream",
+                "(Ljava/io/InputStream;)Landroid/graphics/Bitmap;", 
+                "OOM_UNCYCLE_LOCAL_BITMAP"));
+        streamFactoryCollection.add(new MethodReturnValueStreamFactory("android.graphics.BitmapFactory", "decodeStream",
+                "(Ljava/io/InputStream;Landroid/graphics/Rect;Landroid/graphics/BitmapFactory$Options;)Landroid/graphics/Bitmap;", 
                 "OOM_UNCYCLE_LOCAL_BITMAP"));
         streamFactoryList = streamFactoryCollection.toArray(new StreamFactory[streamFactoryCollection.size()]);
     }

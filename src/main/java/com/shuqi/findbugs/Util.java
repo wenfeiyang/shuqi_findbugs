@@ -1,13 +1,20 @@
 package com.shuqi.findbugs;
 
+import javax.annotation.CheckForNull;
+
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.ConstantClass;
+import org.apache.bcel.classfile.InnerClass;
+import org.apache.bcel.classfile.InnerClasses;
+import org.apache.bcel.classfile.JavaClass;
+
 import edu.umd.cs.findbugs.ba.Hierarchy;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
-import edu.umd.cs.findbugs.util.ClassName;
 
 public class Util {
-	private static boolean DEBUG = true;
 	
 	public static ClassDescriptor[] getMethodParameterTypes(String signature) {
 		SignatureParser parser = new SignatureParser(signature);
@@ -74,6 +81,24 @@ public class Util {
 	public static ClassDescriptor toClassDescriptor(String signature) {
 		return DescriptorFactory.createClassOrObjectDescriptorFromSignature(signature);
 	}
+	
+    @CheckForNull
+    public static JavaClass getOuterClass(JavaClass obj) throws ClassNotFoundException {
+        for (Attribute a : obj.getAttributes()) {
+            if (a instanceof InnerClasses) {
+                for (InnerClass ic : ((InnerClasses) a).getInnerClasses()) {
+                    if (obj.getClassNameIndex() == ic.getInnerClassIndex()) {
+                        ConstantClass oc = (ConstantClass) obj.getConstantPool().getConstant(ic.getOuterClassIndex());
+                        if (oc != null) {
+	                        String ocName = oc.getBytes(obj.getConstantPool());
+	                        return Repository.lookupClass(ocName);
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
 	
 	public static void main(String[] args) {
 		for (String para : Util.getMethodParameterClassNames("(J)V")) {

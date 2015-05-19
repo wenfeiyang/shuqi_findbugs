@@ -67,7 +67,6 @@ public class UseAdapterConvertView extends OpcodeStackDetector implements Statel
 		return "getView".equals(getMethodName()) && VALID_GETVIEW_SIG.equals(getMethodSig());
 	}
 
-
 	@Override
 	public void visitAfter(Code obj) {
 		if (report_mask) {

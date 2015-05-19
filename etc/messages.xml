@@ -19,14 +19,6 @@ This plugin contains all of the specific FindBugs detectors for shuqi project.
     </Details>
   </Plugin>
 
-<!--   <Detector class="com.shuqi.findbugs.OomDetector">
-    <Details>
-<![CDATA[
-<p> This detector finds logs statements that aren't contained in an if-logging block. 
-It is a fast detector.
-]]>
-    </Details>
-  </Detector> -->
   
    <Detector class="com.shuqi.findbugs.BitmapMisuse">
     <Details>
@@ -80,6 +72,26 @@ It is a slow detector.</p>
     </Details>
   </Detector>
   
+  <Detector class="com.shuqi.findbugs.DialogDismiss">
+    <Details>
+<![CDATA[
+<p> This detector looks for Dialog instances whose 'show()' is called somewhere, but missing 'cancel()' or 'dismiss()' in the code
+It is a fast detector.</p>
+]]>
+    </Details>
+  </Detector>
+  
+  <Detector class="com.shuqi.findbugs.InnerClassMisuse">
+    <Details>
+<![CDATA[
+<p> This detector looks for non-static inner classes in Activity, View, Dialog or Toast. 
+Each instance of a nonstatic inner class will have an extraneous reference to its outer Activity instance. 
+Storing this reference can result in the Activity being retained when it would otherwise be eligible for garbage collection
+It is a fast detector.</p>
+]]>
+    </Details>
+  </Detector>
+  
   <Detector class="com.shuqi.findbugs.NamingConvention">
     <Details>
 <![CDATA[
@@ -118,7 +130,7 @@ It is a slow detector.</p>
     <Details>
 <![CDATA[
 <p> Static references of Object holding memory-consumption resources
-<p> Permitted static refer types: "com.shuqi.activity.ActivityBase", "android.app.Activity", "android.graphics.Bitmap", "android.graphics.drawable"
+<p> Permitted static refer types: "android.app.Activity", "android.graphics.Bitmap", "android.graphics.drawable"
 ]]>
     </Details>
   </BugPattern>
@@ -208,10 +220,10 @@ have problems communicating with the database.</p>
   
   <BugPattern type="OOM_MISUSE_APPLICATION_CONTEXT">
     <ShortDescription>Should use application context</ShortDescription>
-    <LongDescription>Should use application context besides for Dialog objects, etc</LongDescription>
+    <LongDescription>Should use application context</LongDescription>
     <Details>
 <![CDATA[
-Should use application context as much as possible
+Should use application context as much as possible.
 ]]>
     </Details>
   </BugPattern>
@@ -221,7 +233,27 @@ Should use application context as much as possible
     <LongDescription>Should use activity context for dialog</LongDescription>
     <Details>
 <![CDATA[
-Dialog should use activity context
+Dialog should use activity context.
+]]>
+    </Details>
+  </BugPattern>
+  
+  <BugPattern type="OOM_MISUSE_ACTIVITY_CONTEXT">
+    <ShortDescription>Should use activity context</ShortDescription>
+    <LongDescription>Should use activity context for dialog</LongDescription>
+    <Details>
+<![CDATA[
+Dialog should use activity context.
+]]>
+    </Details>
+  </BugPattern>
+  
+  <BugPattern type="OOM_DIALOG_MISSING_DISMISS_OR_CANCEL">
+    <ShortDescription>Showed Dialog Should call cancel() or dismiss() somewhere</ShortDescription>
+    <LongDescription>Showed Dialog Should call cancel() or dismiss() somewhere</LongDescription>
+    <Details>
+<![CDATA[
+Showed Dialog Should call cancel() or dismiss() somewhere.
 ]]>
     </Details>
   </BugPattern>
@@ -246,6 +278,26 @@ Service subclass's name should end with 'Service'
     </Details>
   </BugPattern>
   
+   <BugPattern type="NM_BROADCASTRECEIVER_CLASS_NAMING">
+    <ShortDescription>BroadcastReceiver subclass's name should end with 'BroadcastReceiver'</ShortDescription>
+    <LongDescription>BroadcastReceiver subclass's name should end with 'BroadcastReceiver'</LongDescription>
+    <Details>
+<![CDATA[
+BroadcastReceiver subclass's name should end with 'BroadcastReceiver'
+]]>
+    </Details>
+  </BugPattern>
+  
+   <BugPattern type="NM_CONTENTPROVIDER_CLASS_NAMING">
+    <ShortDescription>ContentProvider subclass's name should end with 'ContentProvider'</ShortDescription>
+    <LongDescription>ContentProvider subclass's name should end with 'ContentProvider'</LongDescription>
+    <Details>
+<![CDATA[
+ContentProvider subclass's name should end with 'ContentProvider'
+]]>
+    </Details>
+  </BugPattern>
+  
    <BugPattern type="NM_DIALOG_CLASS_NAMING">
     <ShortDescription>Dialog subclass's name should end with 'Dialog'</ShortDescription>
     <LongDescription>Dialog subclass's name should end with 'Dialog'</LongDescription>
@@ -256,6 +308,83 @@ Dialog subclass's name should end with 'Dialog'
     </Details>
   </BugPattern>
   
-  <BugCode abbrev="OOM">Found OOM issue</BugCode>
+   <BugPattern type="NM_TOAST_CLASS_NAMING">
+    <ShortDescription>Toast subclass's name should end with 'Toast'</ShortDescription>
+    <LongDescription>Toast subclass's name should end with 'Toast'</LongDescription>
+    <Details>
+<![CDATA[
+Toast subclass's name should end with 'Toast'
+]]>
+    </Details>
+  </BugPattern>
+  
+   <BugPattern type="NM_VIEW_CLASS_NAMING">
+    <ShortDescription>Customized View class's name should end with 'View'</ShortDescription>
+    <LongDescription>Customized View class's name should end with 'View'</LongDescription>
+    <Details>
+<![CDATA[
+Customized View class's name should end with 'View'
+]]>
+    </Details>
+  </BugPattern>
+  
+  <BugPattern type="OOM_NON_STATIC_INNER_CLASS_IN_ACTIVITY">
+    <ShortDescription>Found non-static inner class in Activiy</ShortDescription>
+    <LongDescription>Found non-static inner class in Activiy</LongDescription>
+    <Details>
+<![CDATA[
+ In Java, non-static inner classes hold an implicit reference to their enclosing class. 
+ If you're not careful, storing this reference can result in the Activity being retained 
+ when it would otherwise be eligible for garbage collection. 
+ Activity objects hold a reference to their entire view hierarchy and all its resources, 
+ so if you leak one, you leak a lot of memory.
+]]>
+    </Details>
+  </BugPattern>
+  
+
+    <BugPattern type="OOM_NON_STATIC_INNER_CLASS_IN_VIEW">
+    <ShortDescription>Found non-static inner class in Customized View</ShortDescription>
+    <LongDescription>Found non-static inner class in Customized View</LongDescription>
+    <Details>
+<![CDATA[
+ In Java, non-static inner classes hold an implicit reference to their enclosing class. 
+ If you're not careful, storing this reference can result in the Activity being retained 
+ when it would otherwise be eligible for garbage collection. 
+ Activity objects hold a reference to their entire view hierarchy and all its resources, 
+ so if you leak one, you leak a lot of memory.
+]]>
+    </Details>
+  </BugPattern>
+  
+    <BugPattern type="OOM_NON_STATIC_INNER_CLASS_IN_DIALOG">
+    <ShortDescription>Found non-static inner class in Dialog</ShortDescription>
+    <LongDescription>Found non-static inner class in Dialog</LongDescription>
+    <Details>
+<![CDATA[
+ In Java, non-static inner classes hold an implicit reference to their enclosing class. 
+ If you're not careful, storing this reference can result in the Activity being retained 
+ when it would otherwise be eligible for garbage collection. 
+ Activity objects hold a reference to their entire view hierarchy and all its resources, 
+ so if you leak one, you leak a lot of memory.
+]]>
+    </Details>
+  </BugPattern>
+  
+    <BugPattern type="OOM_NON_STATIC_INNER_CLASS_IN_TOAST">
+    <ShortDescription>Found non-static inner class in Toast</ShortDescription>
+    <LongDescription>Found non-static inner class in Toast</LongDescription>
+    <Details>
+<![CDATA[
+ In Java, non-static inner classes hold an implicit reference to their enclosing class. 
+ If you're not careful, storing this reference can result in the Activity being retained 
+ when it would otherwise be eligible for garbage collection. 
+ Activity objects hold a reference to their entire view hierarchy and all its resources, 
+ so if you leak one, you leak a lot of memory.
+]]>
+    </Details>
+  </BugPattern>
+  
+  <BugCode abbrev="OOM">Found OOM issues</BugCode>
 </MessageCollection>
 

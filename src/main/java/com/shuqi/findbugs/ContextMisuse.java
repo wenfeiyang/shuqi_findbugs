@@ -9,6 +9,7 @@ import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.SystemProperties;
+import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
@@ -44,9 +45,11 @@ public class ContextMisuse extends OpcodeStackDetector implements StatelessDetec
 	 }
 	 
 	 private boolean isWidgetClass(ClassDescriptor desc) {
-		 return desc.getDottedClassName().startsWith("android.widget") || 
-				 desc.getDottedClassName().startsWith("android.view") ||
-				 desc.getDottedClassName().startsWith("android.webkit");
+		 String className = desc.getDottedClassName();
+		 return className.startsWith("android.widget") || 
+				 className.startsWith("android.view") ||
+				 className.startsWith("android.webkit") ||
+				 className.startsWith("android.content.Intent");
 	 }
 	 
 	 private void reportBug(String pattern) {
@@ -87,9 +90,7 @@ public class ContextMisuse extends OpcodeStackDetector implements StatelessDetec
 					}
 				}
 			} catch (ClassNotFoundException e) {
-				if (DEBUG) {
-					e.printStackTrace();
-				}
+				AnalysisContext.reportMissingClass(e);
 			}
 			break;	
 		default:

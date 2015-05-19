@@ -6,11 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
-import org.apache.bcel.classfile.ConstantInterfaceMethodref;
-import org.apache.bcel.classfile.ConstantMethodref;
 import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -19,13 +16,10 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.StatelessDetector;
 import edu.umd.cs.findbugs.SystemProperties;
-import edu.umd.cs.findbugs.ba.Location;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 import edu.umd.cs.findbugs.classfile.DescriptorFactory;
-import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.MethodDescriptor;
-import edu.umd.cs.findbugs.util.ClassName;
 
 
 public class BitmapMisuse extends OpcodeStackDetector implements StatelessDetector {
@@ -36,7 +30,8 @@ public class BitmapMisuse extends OpcodeStackDetector implements StatelessDetect
 	private Map<String, Boolean> bitmap_field_recycled_map = new HashMap<String, Boolean>();
 	
 	private static String BITMAP_CLASS_NAME = "android.graphics.Bitmap";
-	private static String BITMAPFACTORY_CLASS_NAME = "android.graphics.BitmapFactory$Options";
+	private static String BITMAPFACTORY_CLASS_NAME = "android.graphics.BitmapFactory";
+	private static String BITMAPFACTORY_OPTION_CLASS_NAME = "android.graphics.BitmapFactory$Options";
 	private String last_invoked_field_sig = null;
 	
 	static final boolean DEBUG = SystemProperties.getBoolean("cm.debug");
@@ -59,7 +54,7 @@ public class BitmapMisuse extends OpcodeStackDetector implements StatelessDetect
 	
 	private boolean isCallingBitmapFactoryDecodeMethod() {
 		MethodDescriptor method_desc_oper = getMethodDescriptorOperand();
-		return "android.graphics.BitmapFactory".equals(method_desc_oper.getClassDescriptor().getDottedClassName())
+		return BITMAPFACTORY_CLASS_NAME.equals(method_desc_oper.getClassDescriptor().getDottedClassName())
 				&& ("decodeResource".equals(method_desc_oper.getName()) || "decodeFile".equals(method_desc_oper.getName()));	
 	}
 	
@@ -109,7 +104,7 @@ public class BitmapMisuse extends OpcodeStackDetector implements StatelessDetect
         case PUTSTATIC:
         case PUTFIELD:
         	last_invoked_field_sig = getClassConstantOperand() + "/" + getFieldDescriptorOperand().getName();
-            if (BITMAPFACTORY_CLASS_NAME.equals(getDottedClassConstantOperand())
+            if (BITMAPFACTORY_OPTION_CLASS_NAME.equals(getDottedClassConstantOperand())
             		&& "inSampleSize".equals(getFieldDescriptorOperand().getName())) {
             	options_obj_registers.add(stack.getStackItem(1).getRegisterNumber());
             }

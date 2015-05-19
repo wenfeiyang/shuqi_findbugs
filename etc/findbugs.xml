@@ -4,7 +4,8 @@
           defaultenabled="true"
           version="1.0"
           provider="Shuqi project" website="http://findbugs.sourceforge.net">
-<!--   <Detector class="com.shuqi.findbugs.OomDetector" speed="fast" reports="OOM_UNPROTECTED_LOGGING" hidden="false"/> -->
+          
+<!--  detectors  -->
    <Detector class="com.shuqi.findbugs.BitmapMisuse" speed="fast" 
       reports="OOM_BITMAP_NO_SAMPLING,OOM_BITMAP_NO_EXPLICIT_RECYCLE" hidden="false"/>
   <Detector class="com.shuqi.findbugs.StaticReferResource" speed="slow" reports="OOM_STATIC_REFER_RESOURCE" hidden="false"/>
@@ -14,10 +15,17 @@
       reports="OOM_OPEN_DATABASE_RESOURCE,OOM_OPEN_DATABASE_RESOURCE_EXCEPTION_PATH,OOM_UNCYCLE_LOCAL_BITMAP,OOM_UNCYCLE_LOCAL_BITMAP_EXCEPTION_PATH" hidden="false"/>
   <Detector class="com.shuqi.findbugs.ContextMisuse" speed="fast" reports="OOM_MISUSE_APPLICATION_CONTEXT,OOM_MISUSE_ACTIVITY_CONTEXT" hidden="false"/>
   <Detector class="com.shuqi.findbugs.NamingConvention" speed="fast" 
-      reports="NM_ACTIVITY_CLASS_NAMING,NM_SERVICE_CLASS_NAMING, NM_DIALOG_CLASS_NAMING" hidden="false"/>
-  <BugCode abbrev="OOM"/>
+      reports="NM_ACTIVITY_CLASS_NAMING,NM_SERVICE_CLASS_NAMING, NM_DIALOG_CLASS_NAMING, NM_BROADCASTRECEIVER_CLASS_NAMING, NM_CONTENTPROVIDER_CLASS_NAMING, NM_TOAST_CLASS_NAMING, NM_VIEW_CLASS_NAMING" hidden="false"/>
+  <Detector class="com.shuqi.findbugs.DialogDismiss" speed="fast" reports="OOM_DIALOG_MISSING_DISMISS_OR_CANCEL" hidden="false"/>
+  <Detector class="com.shuqi.findbugs.InnerClassMisuse" speed="fast" 
+      reports="OOM_NON_STATIC_INNER_CLASS_IN_ACTIVITY, OOM_NON_STATIC_INNER_CLASS_IN_VIEW, OOM_NON_STATIC_INNER_CLASS_IN_DIALOG, OOM_NON_STATIC_INNER_CLASS_IN_TOAST" hidden="false"/>
+  
 
-<!--   <BugPattern abbrev="OOM" type="OOM_UNPROTECTED_LOGGING" category="PERFORMANCE"/> -->
+<!--  bug codes  -->
+  <BugCode abbrev="OOM"/>
+  
+
+<!--  bug patterns  -->
   <BugPattern abbrev="OOM" type="OOM_BITMAP_NO_SAMPLING" category="PERFORMANCE"/>
   <BugPattern abbrev="OOM" type="OOM_BITMAP_NO_EXPLICIT_RECYCLE" category="PERFORMANCE"/>
   <BugPattern abbrev="OOM" type="OOM_STATIC_REFER_RESOURCE" category="PERFORMANCE"/>
@@ -29,7 +37,16 @@
   <BugPattern abbrev="OOM" type="OOM_UNCYCLE_LOCAL_BITMAP_EXCEPTION_PATH" category="PERFORMANCE"/>
   <BugPattern abbrev="OOM" type="OOM_MISUSE_APPLICATION_CONTEXT" category="PERFORMANCE"/>
   <BugPattern abbrev="OOM" type="OOM_MISUSE_ACTIVITY_CONTEXT" category="PERFORMANCE"/>
+  <BugPattern abbrev="OOM" type="OOM_DIALOG_MISSING_DISMISS_OR_CANCEL" category="PERFORMANCE"/>
   <BugPattern abbrev="Nm" type="NM_ACTIVITY_CLASS_NAMING" category="BAD_PRACTICE"/>
   <BugPattern abbrev="Nm" type="NM_SERVICE_CLASS_NAMING" category="BAD_PRACTICE"/>
   <BugPattern abbrev="Nm" type="NM_DIALOG_CLASS_NAMING" category="BAD_PRACTICE"/>
+  <BugPattern abbrev="Nm" type="NM_BROADCASTRECEIVER_CLASS_NAMING" category="BAD_PRACTICE"/>
+  <BugPattern abbrev="Nm" type="NM_CONTENTPROVIDER_CLASS_NAMING" category="BAD_PRACTICE"/>
+  <BugPattern abbrev="Nm" type="NM_TOAST_CLASS_NAMING" category="BAD_PRACTICE"/>
+  <BugPattern abbrev="Nm" type="NM_VIEW_CLASS_NAMING" category="BAD_PRACTICE"/>
+  <BugPattern abbrev="OOM" type="OOM_NON_STATIC_INNER_CLASS_IN_ACTIVITY" category="PERFORMANCE"/>
+  <BugPattern abbrev="OOM" type="OOM_NON_STATIC_INNER_CLASS_IN_VIEW" category="PERFORMANCE"/>
+  <BugPattern abbrev="OOM" type="OOM_NON_STATIC_INNER_CLASS_IN_DIALOG" category="PERFORMANCE"/>
+  <BugPattern abbrev="OOM" type="OOM_NON_STATIC_INNER_CLASS_IN_TOAST" category="PERFORMANCE"/>
 </FindbugsPlugin>
