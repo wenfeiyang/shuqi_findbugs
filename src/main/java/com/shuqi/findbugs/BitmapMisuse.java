@@ -135,12 +135,13 @@ public class BitmapMisuse extends OpcodeStackDetector implements StatelessDetect
         	}
         	break;
         case INVOKESTATIC:
+        	// invoke BitmapFactory.decodeFile or BitmapFactory.decodeResource
         	if (isCallingBitmapFactoryDecodeMethod()) {
 	        	if (isMissingOptionInBitmapFactoryDecodeMethod()) {
 	        		reportBug();
 	        	} else {
-	        		if (options_obj_registers.size() <= 0
-	        				|| options_obj_registers.indexOf(stack.getStackItem(0).getRegisterNumber()) < -1) {
+	        		if (options_obj_registers.size() < 1
+	        				|| options_obj_registers.indexOf(stack.getStackItem(0).getRegisterNumber()) < 0) {
 	        			reportBug();
 	        		}
 	        	}
