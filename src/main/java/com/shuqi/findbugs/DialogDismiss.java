@@ -54,13 +54,6 @@ public class DialogDismiss extends OpcodeStackDetector implements StatelessDetec
 	}
 	
 	private void reportBugPerClass() {
-		if (DEBUG) {
-			if (show_tracking_map.keySet().size() > 0) {
-				System.out.println(show_tracking_map);
-				System.out.println(cancel_tracking_map);
-				System.out.println(dismiss_tracking_map);
-			}
-		}
 		for (String sig: show_tracking_map.keySet()) {
 			if (!cancel_tracking_map.containsKey(sig) 
 					&& !dismiss_tracking_map.containsKey(sig)) {

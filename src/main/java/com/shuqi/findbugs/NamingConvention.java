@@ -30,40 +30,43 @@ public class NamingConvention implements Detector, StatelessDetector {
 	public void visitClassContext(ClassContext classContext) {
 		String className = classContext.getClassDescriptor().getDottedClassName();
 		try {
-			if (Util.isSubType(ACTIVITY_BASE, className)) {
-				if (! className.endsWith("Activity")) {
-					bugReporter.reportBug(new BugInstance(this, "NM_ACTIVITY_CLASS_NAMING", NORMAL_PRIORITY)
-					.addClass(classContext.getClassDescriptor()));
-				}
-			} else if(Util.isSubType(SERVICE_BASE, className)) {
-				if (! className.endsWith("Service")) {
-					bugReporter.reportBug(new BugInstance(this, "NM_SERVICE_CLASS_NAMING", NORMAL_PRIORITY)
-					.addClass(classContext.getClassDescriptor()));
-				}
-			} else if(Util.isSubType(BROADCASTRECEIVER_BASE, className)) {
-				if (! className.endsWith("BroadcastReceiver")) {
-					bugReporter.reportBug(new BugInstance(this, "NM_BROADCASTRECEIVER_CLASS_NAMING", NORMAL_PRIORITY)
-					.addClass(classContext.getClassDescriptor()));
-				}	
-			} else if(Util.isSubType(CONTENTPROVIDER_BASE, className)) {
-				if (! className.endsWith("ContentProvider")) {
-					bugReporter.reportBug(new BugInstance(this, "NM_CONTENTPROVIDER_CLASS_NAMING", NORMAL_PRIORITY)
-					.addClass(classContext.getClassDescriptor()));
-				}	
-			} else if(Util.isSubType(DIALOG_BASE, className)) {
-				if (! className.endsWith("Dialog")) {
-					bugReporter.reportBug(new BugInstance(this, "NM_DIALOG_CLASS_NAMING", NORMAL_PRIORITY)
-					.addClass(classContext.getClassDescriptor()));
-				}
-			} else if(Util.isSubType(TOAST_BASE, className)) {
-				if (! className.endsWith("Toast")) {
-					bugReporter.reportBug(new BugInstance(this, "NM_TOAST_CLASS_NAMING", NORMAL_PRIORITY)
-					.addClass(classContext.getClassDescriptor()));
-				}
-			} else if(Util.isSubType(VIEW_BASE, className)) {
-				if (! className.endsWith("View")) {
-					bugReporter.reportBug(new BugInstance(this, "NM_VIEW_CLASS_NAMING", NORMAL_PRIORITY)
-					.addClass(classContext.getClassDescriptor()));
+			if (!className.contains(".R$") && 
+					className.endsWith(classContext.getXClass().getSuperclassDescriptor().getSimpleName())) {
+				if (Util.isSubType(ACTIVITY_BASE, className)) {
+					if (! className.endsWith("Activity")) {
+						bugReporter.reportBug(new BugInstance(this, "NM_ACTIVITY_CLASS_NAMING", NORMAL_PRIORITY)
+						.addClass(classContext.getClassDescriptor()));
+					}
+				} else if(Util.isSubType(SERVICE_BASE, className)) {
+					if (! className.endsWith("Service")) {
+						bugReporter.reportBug(new BugInstance(this, "NM_SERVICE_CLASS_NAMING", NORMAL_PRIORITY)
+						.addClass(classContext.getClassDescriptor()));
+					}
+				} else if(Util.isSubType(BROADCASTRECEIVER_BASE, className)) {
+					if (! className.endsWith("BroadcastReceiver")) {
+						bugReporter.reportBug(new BugInstance(this, "NM_BROADCASTRECEIVER_CLASS_NAMING", NORMAL_PRIORITY)
+						.addClass(classContext.getClassDescriptor()));
+					}	
+				} else if(Util.isSubType(CONTENTPROVIDER_BASE, className)) {
+					if (! className.endsWith("ContentProvider")) {
+						bugReporter.reportBug(new BugInstance(this, "NM_CONTENTPROVIDER_CLASS_NAMING", NORMAL_PRIORITY)
+						.addClass(classContext.getClassDescriptor()));
+					}	
+				} else if(Util.isSubType(DIALOG_BASE, className)) {
+					if (! className.endsWith("Dialog")) {
+						bugReporter.reportBug(new BugInstance(this, "NM_DIALOG_CLASS_NAMING", NORMAL_PRIORITY)
+						.addClass(classContext.getClassDescriptor()));
+					}
+				} else if(Util.isSubType(TOAST_BASE, className)) {
+					if (! className.endsWith("Toast")) {
+						bugReporter.reportBug(new BugInstance(this, "NM_TOAST_CLASS_NAMING", NORMAL_PRIORITY)
+						.addClass(classContext.getClassDescriptor()));
+					}
+				} else if(Util.isSubType(VIEW_BASE, className)) {
+					if (! className.endsWith("View")) {
+						bugReporter.reportBug(new BugInstance(this, "NM_VIEW_CLASS_NAMING", NORMAL_PRIORITY)
+						.addClass(classContext.getClassDescriptor()));
+					}
 				}
 			}
 		} catch (ClassNotFoundException e) {

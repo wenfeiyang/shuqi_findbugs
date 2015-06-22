@@ -99,12 +99,4 @@ public class Util {
         }
         return null;
     }
-	
-	public static void main(String[] args) {
-		for (String para : Util.getMethodParameterClassNames("(J)V")) {
-			System.out.println(para);
-		}
-	}
-
-
 }

@@ -24,7 +24,9 @@ import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 public class BitmapMisuse extends OpcodeStackDetector implements StatelessDetector {
 	
-	private List<Integer> options_obj_registers = new ArrayList<Integer>();
+	private List<Integer> options_inSampleSize_registers = new ArrayList<Integer>();
+	private List<Integer> options_inJustDecodeBounds_registers = new ArrayList<Integer>();
+	private Map<Integer, OptionTracking> options_tracking_map = new HashMap<Integer, OptionTracking>();
 	private Map<String, List<ProtentialMisuse>> bitmap_field_obj_map = new HashMap<String, List<ProtentialMisuse>>();
 	private Map<String, Boolean> bitmap_field_assigned_map = new HashMap<String, Boolean>();
 	private Map<String, Boolean> bitmap_field_recycled_map = new HashMap<String, Boolean>();
@@ -46,6 +48,11 @@ public class BitmapMisuse extends OpcodeStackDetector implements StatelessDetect
 			this.method = method;
 			this.sourceline = location;
 		}
+	}
+	
+	private static class OptionTracking {
+		private boolean isInSampleSize = false;
+		private boolean isJustDecodeBounds = false;
 	}
 	 
 	 public BitmapMisuse(BugReporter bugReporter) {
@@ -71,23 +78,29 @@ public class BitmapMisuse extends OpcodeStackDetector implements StatelessDetect
 	}
 	
 	private void clearState() {
-		options_obj_registers.clear();
-		options_obj_registers = new ArrayList<Integer>();
+		options_inSampleSize_registers.clear();
+		options_inSampleSize_registers = new ArrayList<Integer>();
+		options_inJustDecodeBounds_registers.clear();
+		options_inJustDecodeBounds_registers = new ArrayList<Integer>();
+		options_tracking_map.clear();
+		options_tracking_map = new HashMap<Integer, OptionTracking>();
 		last_invoked_field_sig = null;
 	}
 	
 	@Override
 	public boolean shouldVisit(JavaClass jclass) {
-        for (int i = 0; i < jclass.getConstantPool().getLength(); ++i) {
-            Constant constant = jclass.getConstantPool().getConstant(i);
-            if (constant instanceof ConstantNameAndType) {
-            	ConstantNameAndType cc = (ConstantNameAndType) constant;
-            	if (cc.getSignature(getConstantPool()).contains("Landroid/graphics/Bitmap;")) {
-            		return true;
-            	}
-            }
-        }
-		return super.shouldVisit(jclass);
+		if (!getClassDescriptor().isAnonymousClass()) {
+	        for (int i = 0; i < jclass.getConstantPool().getLength(); ++i) {
+	            Constant constant = jclass.getConstantPool().getConstant(i);
+	            if (constant instanceof ConstantNameAndType) {
+	            	ConstantNameAndType cc = (ConstantNameAndType) constant;
+	            	if (cc.getSignature(getConstantPool()).contains("Landroid/graphics/Bitmap;")) {
+	            		return true;
+	            	}
+	            }
+	        }
+		}
+	    return false;
 	}
 	
 	
@@ -98,15 +111,26 @@ public class BitmapMisuse extends OpcodeStackDetector implements StatelessDetect
 	}
  
 	@Override
-	public void sawOpcode(int seen) {
-		
+	public void sawOpcode(int seen) {	
         switch(seen) {
         case PUTSTATIC:
         case PUTFIELD:
         	last_invoked_field_sig = getClassConstantOperand() + "/" + getFieldDescriptorOperand().getName();
-            if (BITMAPFACTORY_OPTION_CLASS_NAME.equals(getDottedClassConstantOperand())
-            		&& "inSampleSize".equals(getFieldDescriptorOperand().getName())) {
-            	options_obj_registers.add(stack.getStackItem(1).getRegisterNumber());
+            if (BITMAPFACTORY_OPTION_CLASS_NAME.equals(getDottedClassConstantOperand())) {
+            	String operand = getFieldDescriptorOperand().getName();
+            	Integer register = stack.getStackItem(1).getRegisterNumber();
+            	if (!options_tracking_map.containsKey(register)) {
+            		options_tracking_map.put(register, new OptionTracking());
+            	}
+            	if ("inSampleSize".equals(operand)) {
+            		options_tracking_map.get(register).isInSampleSize = true;
+            	} else if ("inJustDecodeBounds".equals(operand)) {
+            		if (ICONST_1 == getPrevOpcode(1)) {
+            			options_tracking_map.get(register).isJustDecodeBounds = true;
+            		} else if (ICONST_0 == getPrevOpcode(1)) {
+            			options_tracking_map.get(register).isJustDecodeBounds = false;
+            		}
+            	}
             }
             ClassDescriptor field_class_desc =DescriptorFactory.createClassDescriptorFromFieldSignature(getFieldDescriptorOperand().getSignature());
             if (field_class_desc != null && BITMAP_CLASS_NAME.equals(field_class_desc.getDottedClassName())) {
@@ -140,8 +164,13 @@ public class BitmapMisuse extends OpcodeStackDetector implements StatelessDetect
 	        	if (isMissingOptionInBitmapFactoryDecodeMethod()) {
 	        		reportBug();
 	        	} else {
-	        		if (options_obj_registers.size() < 1
-	        				|| options_obj_registers.indexOf(stack.getStackItem(0).getRegisterNumber()) < 0) {
+	        		int register = stack.getStackItem(0).getRegisterNumber();
+	        		if (options_tracking_map.containsKey(register)) {
+	        			OptionTracking option = options_tracking_map.get(register);
+	        			if (!option.isJustDecodeBounds && !option.isInSampleSize) {
+	        				reportBug();
+	        			}
+	        		} else {
 	        			reportBug();
 	        		}
 	        	}
@@ -153,6 +182,28 @@ public class BitmapMisuse extends OpcodeStackDetector implements StatelessDetect
         }
 		
 	}
+	
+//	@Override
+//	public void sawOpcode(int seen) {	
+//        switch(seen) {
+//        case INVOKESTATIC:
+//        	// invoke BitmapFactory.decodeFile or BitmapFactory.decodeResource
+//    		MethodDescriptor method_desc_oper = getMethodDescriptorOperand();
+//    		if ("android.graphics.BitmapFactory".equals(method_desc_oper.getClassDescriptor().getDottedClassName()) && 
+//    			("decodeResource".equals(method_desc_oper.getName()) || "decodeFile".equals(method_desc_oper.getName()))) {
+//    			if (!method_desc_oper.getSignature().contains("Landroid/graphics/BitmapFactory$Options;)")) {
+//    				BugInstance bug =new BugInstance(this,"OOM_BITMAP_NO_SAMPLING", HIGH_PRIORITY)
+//    								.addClassAndMethod(this).addSourceLine(this, getPC());
+//    				bug.addInt(getPC());
+//    				bugReporter.reportBug(bug);
+//    			}
+//    		}   	
+//        	break;
+//        default:
+//            break;
+//        }
+//	}
+	
 
 	@Override
 	public void visitAfter(JavaClass obj) {

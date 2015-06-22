@@ -84,9 +84,9 @@ It is a fast detector.</p>
   <Detector class="com.shuqi.findbugs.InnerClassMisuse">
     <Details>
 <![CDATA[
-<p> This detector looks for non-static inner classes in Activity, View, Dialog or Toast. 
+<p> This detector looks for non-static or anonmyous inner classes in Activity, View, Dialog or Toast. 
 Each instance of a nonstatic inner class will have an extraneous reference to its outer Activity instance. 
-Storing this reference can result in the Activity being retained when it would otherwise be eligible for garbage collection
+Storing this reference may result in the Activity being retained indirectly when it would otherwise be eligible for garbage collection
 It is a fast detector.</p>
 ]]>
     </Details>
@@ -125,22 +125,21 @@ It is a slow detector.</p>
   </BugPattern>
   
   <BugPattern type="OOM_STATIC_REFER_RESOURCE">
-    <ShortDescription>Static references of memory-consumption resources</ShortDescription>
-    <LongDescription>Static references of memory-consumption resources</LongDescription>
+    <ShortDescription>Static references of memory-consumption Objects</ShortDescription>
+    <LongDescription>{2} has static reference to memory-consumption Objects</LongDescription>
     <Details>
 <![CDATA[
-<p> Static references of Object holding memory-consumption resources
-<p> Permitted static refer types: "android.app.Activity", "android.graphics.Bitmap", "android.graphics.drawable"
+<p> Static references of Object might hold memory-consumption resources, should try to avoid direct or indirect static referrence of  "android.app.Activity", "android.graphics.Bitmap", "android.graphics.drawable"
 ]]>
     </Details>
   </BugPattern>
   
   <BugPattern type="OOM_MISSING_UNREGISTATION">
     <ShortDescription>Missing Context.unregisterReceiver</ShortDescription>
-    <LongDescription>'Context.registerReceiver' and 'Context.unregisterReceiver' should appear in pair in the lifecycle of current class</LongDescription>
+    <LongDescription>'Context.unregisterReceiver' should be called before the ending of android component's lifecycle</LongDescription>
     <Details>
 <![CDATA[
-If 'Context.registerReceiver' is called, 'Context.unregisterReceiver' should be called before end of current class lifecycle
+'Context.registerReceiver' is called, but missing 'Context.unregisterReceiver'. it should be called before the ending of android component's lifecycle to avoid memory leak due to android system continue to hold the referrence
 ]]>
     </Details>
   </BugPattern>
@@ -219,8 +218,8 @@ have problems communicating with the database.</p>
   </BugPattern>
   
   <BugPattern type="OOM_MISUSE_APPLICATION_CONTEXT">
-    <ShortDescription>Should use application context</ShortDescription>
-    <LongDescription>Should use application context</LongDescription>
+    <ShortDescription>Should use application context?</ShortDescription>
+    <LongDescription>{1} could use application context?</LongDescription>
     <Details>
 <![CDATA[
 Should use application context as much as possible.
@@ -229,18 +228,8 @@ Should use application context as much as possible.
   </BugPattern>
   
   <BugPattern type="OOM_MISUSE_ACTIVITY_CONTEXT">
-    <ShortDescription>Should use activity context</ShortDescription>
-    <LongDescription>Should use activity context for dialog</LongDescription>
-    <Details>
-<![CDATA[
-Dialog should use activity context.
-]]>
-    </Details>
-  </BugPattern>
-  
-  <BugPattern type="OOM_MISUSE_ACTIVITY_CONTEXT">
-    <ShortDescription>Should use activity context</ShortDescription>
-    <LongDescription>Should use activity context for dialog</LongDescription>
+    <ShortDescription>Should use activity context for dialog?</ShortDescription>
+    <LongDescription>{1} might not use activity context</LongDescription>
     <Details>
 <![CDATA[
 Dialog should use activity context.
@@ -329,11 +318,25 @@ Customized View class's name should end with 'View'
   </BugPattern>
   
   <BugPattern type="OOM_NON_STATIC_INNER_CLASS_IN_ACTIVITY">
-    <ShortDescription>Found non-static inner class in Activiy</ShortDescription>
-    <LongDescription>Found non-static inner class in Activiy</LongDescription>
+    <ShortDescription>Could be a static inner class</ShortDescription>
+    <LongDescription>Should {0} be a _static_ inner class in Activiy?</LongDescription>
     <Details>
 <![CDATA[
  In Java, non-static inner classes hold an implicit reference to their enclosing class. 
+ If you're not careful, storing this reference can result in the Activity being retained 
+ when it would otherwise be eligible for garbage collection. 
+ Activity objects hold a reference to their entire view hierarchy and all its resources, 
+ so if you leak one, you leak a lot of memory.
+]]>
+    </Details>
+  </BugPattern>
+  
+  <BugPattern type="OOM_ANONYMOUS_INNER_CLASS_IN_ACTIVITY">
+    <ShortDescription>Could be a static inner class in Activity</ShortDescription>
+    <LongDescription>Should {0} be a _static_ inner class in Activiy?</LongDescription>
+    <Details>
+<![CDATA[
+ In Java, anonmyous inner classes hold an implicit reference to their enclosing class. 
  If you're not careful, storing this reference can result in the Activity being retained 
  when it would otherwise be eligible for garbage collection. 
  Activity objects hold a reference to their entire view hierarchy and all its resources, 
@@ -344,11 +347,25 @@ Customized View class's name should end with 'View'
   
 
     <BugPattern type="OOM_NON_STATIC_INNER_CLASS_IN_VIEW">
-    <ShortDescription>Found non-static inner class in Customized View</ShortDescription>
-    <LongDescription>Found non-static inner class in Customized View</LongDescription>
+    <ShortDescription>Could be a static inner class in Customized View?</ShortDescription>
+    <LongDescription>Should {0} be a _static_ inner class in Customized View?</LongDescription>
     <Details>
 <![CDATA[
  In Java, non-static inner classes hold an implicit reference to their enclosing class. 
+ If you're not careful, storing this reference can result in the Activity being retained 
+ when it would otherwise be eligible for garbage collection. 
+ Activity objects hold a reference to their entire view hierarchy and all its resources, 
+ so if you leak one, you leak a lot of memory.
+]]>
+    </Details>
+  </BugPattern>
+  
+    <BugPattern type="OOM_ANONYMOUS_INNER_CLASS_IN_VIEW">
+    <ShortDescription>Could be a static inner class in Customized View</ShortDescription>
+    <LongDescription>Should {0} be a _static_ inner class in Customized View?</LongDescription>
+    <Details>
+<![CDATA[
+ In Java, anonmyous inner classes hold an implicit reference to their enclosing class. 
  If you're not careful, storing this reference can result in the Activity being retained 
  when it would otherwise be eligible for garbage collection. 
  Activity objects hold a reference to their entire view hierarchy and all its resources, 
@@ -358,8 +375,8 @@ Customized View class's name should end with 'View'
   </BugPattern>
   
     <BugPattern type="OOM_NON_STATIC_INNER_CLASS_IN_DIALOG">
-    <ShortDescription>Found non-static inner class in Dialog</ShortDescription>
-    <LongDescription>Found non-static inner class in Dialog</LongDescription>
+    <ShortDescription>Could be static inner class in Dialog</ShortDescription>
+    <LongDescription>Should {0} be a _static_ inner class in Dialog?</LongDescription>
     <Details>
 <![CDATA[
  In Java, non-static inner classes hold an implicit reference to their enclosing class. 
@@ -371,9 +388,23 @@ Customized View class's name should end with 'View'
     </Details>
   </BugPattern>
   
+    <BugPattern type="OOM_ANONYMOUS_INNER_CLASS_IN_DIALOG">
+    <ShortDescription>Could be static inner class in Dialog</ShortDescription>
+    <LongDescription>Should {0} be a _static_ inner class in Dialog?</LongDescription>
+    <Details>
+<![CDATA[
+ In Java, anonmyous inner classes hold an implicit reference to their enclosing class. 
+ If you're not careful, storing this reference can result in the Activity being retained 
+ when it would otherwise be eligible for garbage collection. 
+ Activity objects hold a reference to their entire view hierarchy and all its resources, 
+ so if you leak one, you leak a lot of memory.
+]]>
+    </Details>
+  </BugPattern>
+  
     <BugPattern type="OOM_NON_STATIC_INNER_CLASS_IN_TOAST">
-    <ShortDescription>Found non-static inner class in Toast</ShortDescription>
-    <LongDescription>Found non-static inner class in Toast</LongDescription>
+    <ShortDescription>Could be static inner class in Toast</ShortDescription>
+    <LongDescription>Should {0} be a _static_ inner class in Toast?</LongDescription>
     <Details>
 <![CDATA[
  In Java, non-static inner classes hold an implicit reference to their enclosing class. 
@@ -381,6 +412,56 @@ Customized View class's name should end with 'View'
  when it would otherwise be eligible for garbage collection. 
  Activity objects hold a reference to their entire view hierarchy and all its resources, 
  so if you leak one, you leak a lot of memory.
+]]>
+    </Details>
+  </BugPattern>
+  
+    <BugPattern type="OOM_ANONYMOUS_INNER_CLASS_IN_TOAST">
+    <ShortDescription>Could be static inner class in Toast</ShortDescription>
+    <LongDescription>Should {0} be a _static_ inner class in Toast?</LongDescription>
+    <Details>
+<![CDATA[
+ In Java, anonmyous inner classes hold an implicit reference to their enclosing class. 
+ If you're not careful, storing this reference can result in the Activity being retained 
+ when it would otherwise be eligible for garbage collection. 
+ Activity objects hold a reference to their entire view hierarchy and all its resources, 
+ so if you leak one, you leak a lot of memory.
+]]>
+    </Details>
+  </BugPattern>
+  
+    <BugPattern type="OOM_NON_STATIC_INNER_HANDLER">
+    <ShortDescription>Handler reference leaks</ShortDescription>
+    <LongDescription>Should {0} be a _static_ Handler class?</LongDescription>
+    <Details>
+<![CDATA[
+Since this Handler is declared as an non-static inner class, it may prevent the outer
+class from being garbage collected. If the Handler is using a Looper or
+MessageQueue for a thread other than the main thread, then there is no issue.
+If the Handler is using the Looper or MessageQueue of the main thread, you
+need to fix your Handler declaration, as follows: Declare the Handler as a
+static class; In the outer class, instantiate a WeakReference to the outer
+class and pass this object to your Handler when you instantiate the Handler;
+Make all references to members of the outer class using the WeakReference
+object.
+]]>
+    </Details>
+  </BugPattern>
+  
+    <BugPattern type="OOM_ANONYMOUS_INNER_HANDLER">
+    <ShortDescription>Handler reference leaks</ShortDescription>
+    <LongDescription>Should {0} be a _static_ Handler class?</LongDescription>
+    <Details>
+<![CDATA[
+Since this Handler is declared as an anonymous inner class, it may prevent the outer
+class from being garbage collected. If the Handler is using a Looper or
+MessageQueue for a thread other than the main thread, then there is no issue.
+If the Handler is using the Looper or MessageQueue of the main thread, you
+need to fix your Handler declaration, as follows: Declare the Handler as a
+static class; In the outer class, instantiate a WeakReference to the outer
+class and pass this object to your Handler when you instantiate the Handler;
+Make all references to members of the outer class using the WeakReference
+object.
 ]]>
     </Details>
   </BugPattern>
